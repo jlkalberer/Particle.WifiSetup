@@ -1,0 +1,27 @@
+﻿<Window x:Class="Particle.WifiSetup.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wifiSetup="clr-namespace:Particle.WifiSetup"
+        Title="Particle Wifi Setup" Height="340" Width="300"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow"
+        Background="#00ADEF">
+    <Window.DataContext>
+        <wifiSetup:SetupModel />
+    </Window.DataContext>
+    <Grid>
+        <Label Content="WIFI Security" Foreground="#ffffff" HorizontalAlignment="Left" Margin="12,10,0,0" VerticalAlignment="Top" FontSize="16" Width="222" Padding="0"/>
+        <ComboBox HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" 
+                  Width="260" IsEditable="True" IsReadOnly="True" Text="Select Security" 
+                  FontSize="18" 
+                  ItemsSource="{Binding Source={wifiSetup:Enumeration {x:Type wifiSetup:WifiSecurity}}}"
+                  DisplayMemberPath="Description"
+                  SelectedValue="{Binding WifiSecurity}"
+                  SelectedValuePath="Value"/>
+        <Label Content="SSID" HorizontalAlignment="Left" Margin="12,85,0,0" VerticalAlignment="Top" Foreground="#ffffff" FontSize="16" Width="222" Padding="0"/>
+        <TextBox HorizontalAlignment="Left" FontSize="20" Margin="10,111,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="260" Height="35" Text="{Binding SSID}"/>
+        <Label Content="Password" HorizontalAlignment="Left" Margin="10,151,0,0" VerticalAlignment="Top" Foreground="#ffffff" FontSize="16" Width="222" Padding="0"/>
+        <PasswordBox HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top" Width="260" FontSize="20" Height="34" Name="PasswordBox"/>
+        <Button Content="Setup" HorizontalAlignment="Left" Margin="76,236,0,0" VerticalAlignment="Top" Width="122" Height="47" Background="#ffffff" FontSize="28" Command="{Binding Command}" CommandParameter="{Binding ElementName=PasswordBox}" />
+    </Grid>
+</Window>
