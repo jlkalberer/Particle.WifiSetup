@@ -7,10 +7,10 @@
         [Description("Unsecured")]
         Unsecured = 0,
         [Description("WEP")]
-        WEP,
+        WEP = 1,
         [Description("WPA")]
-        WPA,
+        WPA = 2,
         [Description("WPA2")]
-        WPA2
+        WPA2 = 3,
     }
 }

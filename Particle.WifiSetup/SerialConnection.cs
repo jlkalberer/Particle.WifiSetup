@@ -72,15 +72,13 @@ namespace Particle.WifiSetup
                 return false;
             }
 
-            var connectionString = string.Format("{0}\0{1}\0{2}\0", (int)security, ssid, password);
+            var connectionString = string.Format("{0}\0{1}\0{2}\0", Convert.ToChar(security), ssid, password);
 
             this.port.Write(connectionString);
 
             while (!this.completed)
             {
             }
-
-            var v = 0;
 
             this.port.Close();
             return true;
@@ -100,9 +98,7 @@ namespace Particle.WifiSetup
             this.result = new byte[this.port.BytesToRead];
             this.port.Read(this.result, 0, this.port.BytesToRead);
 
-            string result = System.Text.Encoding.UTF8.GetString(this.result);
-            //this.completed = true;
-            Debug.WriteLine(result);
+            this.completed = true;
         }
     }
 }
