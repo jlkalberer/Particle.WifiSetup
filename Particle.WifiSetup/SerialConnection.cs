@@ -6,6 +6,7 @@ using System.Text;
 namespace Particle.WifiSetup
 {
     using System.Configuration;
+    using System.Diagnostics;
     using System.IO.Ports;
 
     public class SerialConnection
@@ -100,7 +101,8 @@ namespace Particle.WifiSetup
             this.port.Read(this.result, 0, this.port.BytesToRead);
 
             string result = System.Text.Encoding.UTF8.GetString(this.result);
-            this.completed = true;
+            //this.completed = true;
+            Debug.WriteLine(result);
         }
     }
 }
