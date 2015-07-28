@@ -1,5 +1,12 @@
 ﻿namespace Particle.WifiSetup
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.IO;
+    using System.IO.Ports;
+    using System.Linq;
+    using System.Management;
     using System.Windows.Controls;
 
     /// <summary>
@@ -25,12 +32,18 @@
             this.WifiSecurity = WifiSecurity.WPA2;
             this.SubmitEnabled = false;
             this.Command = new RelayCommand(this.Execute, this.CanExecute);
+            this.InstallDriversCommand = new RelayCommand(this.InstallDrivers);
         }
-
+        
         /// <summary>
         /// Gets or sets the command.
         /// </summary>
         public RelayCommand Command { get; set; }
+
+        /// <summary>
+        /// Gets or sets the install drivers command.
+        /// </summary>
+        public RelayCommand InstallDriversCommand { get; set; }
 
         /// <summary>
         /// Gets or sets the SSID.
@@ -88,8 +101,26 @@
             
             var password = passwordBox.Password;
 
-            var v = new SerialConnection("COM6");
-            v.SetupWifi(this.WifiSecurity, this.SSID, password);
+            IList<string> portList;
+            string[] portNames;
+            using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity WHERE Caption like '%(COM%'"))
+            {
+                portNames = SerialPort.GetPortNames();
+                portList = searcher.Get().Cast<ManagementBaseObject>()
+                    .Select(p => p["Caption"].ToString())
+                    .ToList();
+            }
+
+            var item = portList.FirstOrDefault(p => p.Contains("Photon") || p.Contains("Spark"));
+            var itemIndex = portList.IndexOf(item);
+            if (itemIndex < 0)
+            {
+                return;
+            }
+
+
+            var serialConnection = new SerialConnection(portNames[itemIndex].Substring(0, 4));
+            serialConnection.SetupWifi(this.WifiSecurity, this.SSID, password);
         }
 
         /// <summary>
@@ -113,6 +144,26 @@
             var password = passwordBox.Password;
 
             return !string.IsNullOrEmpty(this.SSID) && !string.IsNullOrEmpty(password);
+        }
+
+        /// <summary>
+        /// The install drivers.
+        /// </summary>
+        /// <param name="obj">
+        /// The obj.
+        /// </param>
+        private void InstallDrivers(object obj)
+        {
+            var infName = ConfigurationManager.AppSettings["DriverName"];
+
+            if (string.IsNullOrEmpty(infName))
+            {
+                return;
+            }
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), infName);
+
+            SerialConnection.InstallHinfSection(IntPtr.Zero, IntPtr.Zero, string.Format("DefaultInstall 132 {0}", path), 0);
         }
     }
 }

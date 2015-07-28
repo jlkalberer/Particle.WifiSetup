@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Particle.WifiSetup
+﻿namespace Particle.WifiSetup
 {
+    using System;
     using System.Configuration;
-    using System.Diagnostics;
     using System.IO.Ports;
+    using System.Runtime.InteropServices;
 
     public class SerialConnection
     {
+        /// <summary>
+        /// The baud rate.
+        /// </summary>
         private static readonly int BaudRate;
 
         /// <summary>
@@ -28,8 +27,9 @@ namespace Particle.WifiSetup
         /// </summary>
         private SerialPort port;
 
-        private int counter;
-
+        /// <summary>
+        /// Initializes static members of the <see cref="SerialConnection"/> class.
+        /// </summary>
         static SerialConnection()
         {
             var baudString = ConfigurationManager.AppSettings["BaudRate"];
@@ -55,15 +55,45 @@ namespace Particle.WifiSetup
         }
 
         /// <summary>
+        /// The install <c>hinf</c> section.
+        /// </summary>
+        /// <param name="hwnd">
+        /// The <c>hwnd</c>.
+        /// </param>
+        /// <param name="moduleHandle">
+        /// The module handle.
+        /// </param>
+        /// <param name="cmdLineBuffer">
+        /// The 
+        /// <c>CMD</c> line buffer.
+        /// </param>
+        /// <param name="cmdShow">
+        /// The CMD show.
+        /// </param>
+        [DllImport("Setupapi.dll", EntryPoint = "InstallHinfSection", CallingConvention = CallingConvention.StdCall)]
+        public static extern void InstallHinfSection(
+            [In] IntPtr hwnd,
+            [In] IntPtr moduleHandle,
+            [In, MarshalAs(UnmanagedType.LPWStr)] string cmdLineBuffer,
+            int cmdShow);
+
+        /// <summary>
         /// The setup <c>WIFI</c>.
         /// </summary>
+        /// <param name="security">
+        /// The security.
+        /// </param>
+        /// <param name="ssid">
+        /// The SSID.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
         public bool SetupWifi(WifiSecurity security, string ssid, string password)
         {
-            this.counter = 0;
-
             this.port.Open();
 
             if (!this.port.IsOpen)

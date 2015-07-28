@@ -2,11 +2,15 @@
 
 This is a windows app used to change your WiFi settings over a usb.
 
+
+Include `WiFiSetup.h` and `WiFiSetup.cpp` in your project.
 Here is a sample on getting this to work.
 
 ```c
 #include "application.h"
 #include "WifiSetup.h"
+
+SYSTEM_MODE(SEMI_AUTOMATIC);
 
 void setup(void) {
     Serial.begin(115200);
